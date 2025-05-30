@@ -99,29 +99,37 @@ function App() {
   return (
     <Router>
       {user && (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-          <div className="container-fluid">
-            <Link to="/products" className="navbar-brand text-white text-decoration-none">
-              Electronix System
-            </Link>
-            <div className="d-flex align-items-center gap-3">
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="form-control me-2"
-                style={{ maxWidth: '200px' }}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <Link to="/cart" className="nav-link text-white position-relative">
-                <i className="bi bi-cart" style={{ fontSize: '1.5rem' }}></i>
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {cart.length}
-                </span>
-              </Link>
-            </div>
-          </div>
-        </nav>
-      )}
+  <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <div className="container-fluid d-flex justify-content-between">
+      <div className="d-flex align-items-center gap-3">
+        <Link to="/products" className="navbar-brand fw-bold">
+          Electronix System
+        </Link>
+        <button onClick={() => setUser(null)} className="btn btn-outline-light btn-sm">
+          Cerrar sesión
+        </button>
+      </div>
+
+      <div className="d-flex align-items-center gap-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Buscar..."
+          style={{ width: "200px" }}
+        />
+        <Link to="/cart" className="position-relative text-white">
+          <i className="bi bi-cart fs-4"></i>
+          {cart.length > 0 && (
+            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {cart.length}
+            </span>
+          )}
+        </Link>
+      </div>
+    </div>
+  </nav>
+)}
+
 
       <Routes>
         <Route path="/" element={user ? <Navigate to="/products" /> : <Login setUser={setUser} />} />
