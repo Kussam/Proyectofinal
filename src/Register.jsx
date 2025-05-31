@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -33,12 +34,13 @@ function Register() {
       });
 
       if (response.ok) {
-       try {
-       const data = await response.json();
-       console.log('Usuario registrado:', data);
-       } catch (jsonError) {
-       console.log('Usuario registrado, pero la respuesta no era JSON.'); }
-      
+        try {
+          const data = await response.json();
+          console.log('Usuario registrado:', data);
+        } catch (jsonError) {
+          console.log('Usuario registrado, pero la respuesta no era JSON.');
+        }
+
         setMessage('¡Usuario registrado exitosamente!');
         setFormData({
           Name: '',
@@ -156,6 +158,13 @@ function Register() {
             {message}
           </div>
         )}
+
+        <div className="text-center mt-3">
+          <span>¿Ya tienes una cuenta? </span>
+          <Link to="/login" className="text-primary" style={{ textDecoration: 'underline' }}>
+            Iniciar sesión
+          </Link>
+        </div>
       </div>
     </div>
   );

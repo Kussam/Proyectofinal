@@ -66,3 +66,12 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+.Logo{
+  width: 60px;
+  height: 60px;
+}
+.product-img{
+   width: 500PX;
+  height: 350px;
+  
+}
