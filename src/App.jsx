@@ -68,6 +68,13 @@ function Cart({ cart, setCart }) {
   // Calcula el total del carrito
   const total = cart.reduce((sum, product) => sum + parseInt(product.Price), 0);
 
+  // Función para realizar la compra
+  const handlePurchase = () => {
+    alert('¡Gracias por tu compra!');
+    setCart([]); // Vacía el carrito después de comprar
+    navigate('/products'); // Opcional: redirige a productos
+  };
+
   return (
     <div className="p-5 text-white bg-black min-vh-100">
       <button onClick={() => navigate('/products')} className="btn btn-secondary mb-4">Volver</button>
@@ -91,9 +98,17 @@ function Cart({ cart, setCart }) {
             ))}
           </ul>
 
-          {/* Mostrar total */}
+          {/* Mostrar total y botón de compra */}
           <div className="mt-4 text-end">
             <h4>Total: <span className="text-success">${total.toLocaleString()}</span></h4>
+
+            {/* Botón de realizar compra */}
+            <button
+              className="btn btn-success mt-3"
+              onClick={handlePurchase}
+            >
+              Realizar compra
+            </button>
           </div>
         </>
       )}
