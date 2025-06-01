@@ -16,7 +16,16 @@ function Products({ cart, setCart, searchTerm }) {
   }, [])
 
   const addToCart = (product) => {
-    setCart([...cart, product])
+    const existingProduct = cart.find(p => p.Id_Products === product.Id_Products)
+    if (existingProduct) {
+      setCart(cart.map(p =>
+        p.Id_Products === product.Id_Products
+          ? { ...p, cantidad: p.cantidad + 1 }
+          : p
+      ))
+    } else {
+      setCart([...cart, { ...product, cantidad: 1 }])
+    }
   }
 
   return (
@@ -24,7 +33,6 @@ function Products({ cart, setCart, searchTerm }) {
       <h1 className="mb-4">Productos</h1>
       <div className="row">
         {products
-          // Filtrado de productos basado en el término de búsqueda
           .filter(product =>
             product.Name_Product.toLowerCase().includes(searchTerm.toLowerCase())
           )
@@ -59,21 +67,40 @@ function Products({ cart, setCart, searchTerm }) {
 }
 
 function Cart({ cart, setCart }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  const increaseQty = (id) => {
+    setCart(cart.map(product =>
+      product.Id_Products === id
+        ? { ...product, cantidad: product.cantidad + 1 }
+        : product
+    ))
+  }
+
+  const decreaseQty = (id) => {
+    const product = cart.find(p => p.Id_Products === id)
+    if (product.cantidad > 1) {
+      setCart(cart.map(p =>
+        p.Id_Products === id
+          ? { ...p, cantidad: p.cantidad - 1 }
+          : p
+      ))
+    } else {
+      removeFromCart(id)
+    }
+  }
 
   const removeFromCart = (id) => {
-    setCart(cart.filter(product => product.Id_Products !== id));
-  };
+    setCart(cart.filter(product => product.Id_Products !== id))
+  }
 
-  // Calcula el total del carrito
-  const total = cart.reduce((sum, product) => sum + parseInt(product.Price), 0);
+  const total = cart.reduce((sum, product) => sum + parseInt(product.Price) * product.cantidad, 0)
 
-  // Función para realizar la compra
   const handlePurchase = () => {
-    alert('¡Gracias por tu compra!');
-    setCart([]); // Vacía el carrito después de comprar
-    navigate('/products'); // Opcional: redirige a productos
-  };
+    alert('¡Gracias por tu compra!')
+    setCart([])
+    navigate('/products')
+  }
 
   return (
     <div className="p-5 text-white bg-black min-vh-100">
@@ -90,7 +117,12 @@ function Cart({ cart, setCart }) {
                   <img src={product.Url} alt={product.Name_Product} width="60" height="60" style={{ objectFit: 'cover', borderRadius: '8px' }} />
                   <div>
                     <h5 className="mb-1">{product.Name_Product}</h5>
-                    <p className="mb-0 text-success">${parseInt(product.Price).toLocaleString()}</p>
+                    <div className="d-flex align-items-center gap-2">
+                      {/* Cambié el orden de los botones "-" y "+" */}
+                      <button onClick={() => increaseQty(product.Id_Products)} className="btn btn-sm btn-outline-success">+</button>
+                      <span>{product.cantidad}</span>
+                      <button onClick={() => decreaseQty(product.Id_Products)} className="btn btn-sm btn-outline-danger">-</button>
+                    </div>
                   </div>
                 </div>
                 <button onClick={() => removeFromCart(product.Id_Products)} className="btn btn-outline-danger btn-sm">Eliminar</button>
@@ -98,28 +130,19 @@ function Cart({ cart, setCart }) {
             ))}
           </ul>
 
-          {/* Mostrar total y botón de compra */}
           <div className="mt-4 text-end">
             <h4>Total: <span className="text-success">${total.toLocaleString()}</span></h4>
-
-            {/* Botón de realizar compra */}
-            <button
-              className="btn btn-success mt-3"
-              onClick={handlePurchase}
-            >
-              Realizar compra
-            </button>
+            <button className="btn btn-success mt-3" onClick={handlePurchase}>Realizar compra</button>
           </div>
         </>
       )}
     </div>
-  );
+  )
 }
 
 function App() {
   const [user, setUser] = useState(null)
   const [cart, setCart] = useState([])
-  // Estado para manejar el término de búsqueda
   const [searchTerm, setSearchTerm] = useState('')
 
   return (
@@ -128,17 +151,11 @@ function App() {
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
           <div className="container-fluid d-flex justify-content-between">
             <div className="d-flex align-items-center gap-3">
-               <img className='Logo' src="https://imgur.com/XtYKRaM.jpg" alt="Logo" />
-              <Link to="/products" className="navbar-brand fw-bold">
-                Electronix System
-              </Link>
-              <button onClick={() => setUser(null)} className="btn btn-outline-light btn-sm">
-                Cerrar sesión
-              </button>
+              <img className='Logo' src="https://imgur.com/XtYKRaM.jpg" alt="Logo" />
+              <Link to="/products" className="navbar-brand fw-bold">Electronix System</Link>
+              <button onClick={() => setUser(null)} className="btn btn-outline-light btn-sm">Cerrar sesión</button>
             </div>
-
             <div className="d-flex align-items-center gap-3">
-              {/* Input de búsqueda que actualiza el estado searchTerm */}
               <input
                 type="text"
                 className="form-control"
@@ -151,7 +168,7 @@ function App() {
                 <i className="bi bi-cart fs-4"></i>
                 {cart.length > 0 && (
                   <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    {cart.length}
+                    {cart.reduce((sum, item) => sum + item.cantidad, 0)}
                   </span>
                 )}
               </Link>
@@ -163,8 +180,7 @@ function App() {
       <Routes>
         <Route path="/" element={user ? <Navigate to="/products" /> : <Login setUser={setUser} />} />
         <Route path="/register" element={<Register />} />
-         <Route path="/login" element={<Login />} />
-        {/* Pasamos el searchTerm al componente Products */}
+        <Route path="/login" element={<Login />} />
         <Route path="/products" element={user ? <Products cart={cart} setCart={setCart} searchTerm={searchTerm} /> : <Navigate to="/" />} />
         <Route path="/cart" element={user ? <Cart cart={cart} setCart={setCart} /> : <Navigate to="/" />} />
       </Routes>
