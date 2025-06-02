@@ -112,13 +112,18 @@ function Cart({ cart, setCart }) {
         <>
           <ul className="list-unstyled">
             {cart.map(product => (
-              <li key={product.Id_Products} className="d-flex align-items-center justify-content-between border-bottom py-2">
+              <li key={product.Id_Products} className="d-flex align-items-center justify-content-between border-bottom py-3">
                 <div className="d-flex align-items-center gap-3">
                   <img src={product.Url} alt={product.Name_Product} width="60" height="60" style={{ objectFit: 'cover', borderRadius: '8px' }} />
                   <div>
                     <h5 className="mb-1">{product.Name_Product}</h5>
-                    <div className="d-flex align-items-center gap-2">
-                      {/* Cambié el orden de los botones "-" y "+" */}
+                    <p className="mb-0 text-success">
+                      Precio unitario: ${parseInt(product.Price).toLocaleString()}
+                    </p>
+                    <p className="mb-0 text-warning">
+                      Subtotal: ${(parseInt(product.Price) * product.cantidad).toLocaleString()}
+                    </p>
+                    <div className="d-flex align-items-center gap-2 mt-1">
                       <button onClick={() => increaseQty(product.Id_Products)} className="btn btn-sm btn-outline-success">+</button>
                       <span>{product.cantidad}</span>
                       <button onClick={() => decreaseQty(product.Id_Products)} className="btn btn-sm btn-outline-danger">-</button>
